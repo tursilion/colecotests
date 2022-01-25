@@ -35,7 +35,6 @@
 	jp spinner	; RST 0x38 - spinner interrupt
 	nop
 	jp nmi		; NMI
-	nop
 	.ascii " / / NOT"
 
 start:

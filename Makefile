@@ -12,15 +12,20 @@ RM = del /F
 EXT=rel
 
 # Recipe to compile the app (pad biosmem to be >16k)
-all: rollerTest memTest biosMem megaTest portTest
+all: rollerTest memTest dumpRam biosMem megaTest portTest blanktest
 	"tursi_tools/makemegacart.exe" rollerTest.ihx rollerTest.rom
 	"tursi_tools/makemegacart.exe" portTest.ihx portTest.rom
 	"tursi_tools/makemegacart.exe" memTest.ihx memTest.rom
 	"tursi_tools/makemegacart.exe" megaTest.ihx megaTest.rom
+	"tursi_tools/makemegacart.exe" blanktest.ihx blanktest.rom
+	"tursi_tools/makemegacart.exe" dumpRam.ihx dumpRam.rom
 	"tursi_tools/makemegacart.exe" -bios biosMem.ihx biosMem.rom
 
 rollerTest: rollerTest.$(EXT) crt0_roller.$(EXT)
 	$(CC) -mz80 --no-std-crt0 --code-loc 0x8100 --data-loc 0x7000 -l./libti99coleco/libti99.a "./crt0_roller.$(EXT)" rollerTest.$(EXT) -o rollerTest.ihx
+
+blanktest: blanktest.$(EXT) crt0_roller.$(EXT)
+	$(CC) -mz80 --no-std-crt0 --code-loc 0x8100 --data-loc 0x7000 -l./libti99coleco/libti99.a "./crt0_roller.$(EXT)" blanktest.$(EXT) -o blanktest.ihx
 
 portTest: portTest.$(EXT) crt0_roller.$(EXT)
 	$(CC) -mz80 --no-std-crt0 --code-loc 0x8100 --data-loc 0x7000 -l./libti99coleco/libti99.a "./crt0_roller.$(EXT)" portTest.$(EXT) -o portTest.ihx
@@ -33,6 +38,9 @@ megaTest: megaTest.$(EXT) crt0_memtest.$(EXT)
 
 biosMem: biosMem.$(EXT) dummy.$(EXT) mattfont.$(EXT) crt0_bios.$(EXT)
 	$(CC) -mz80 --no-std-crt0 --code-loc 0x0090 --data-loc 0x6000 -l./libti99coleco/libti99.a "./crt0_bios.$(EXT)" biosMem.$(EXT) mattfont.$(EXT) dummy.$(EXT) -o biosMem.ihx
+
+dumpRam: dumpRam.$(EXT) crt0_memtest.$(EXT)
+	$(CC) -mz80 --no-std-crt0 --code-loc 0x8100 --data-loc 0x7000 -l./libti99coleco/libti99.a "./crt0_memtest.$(EXT)" dumpRam.$(EXT) -o dumpRam.ihx
 
 # special to put dummy in its own segment
 dummy.rel: dummy.c
