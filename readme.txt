@@ -1,8 +1,29 @@
-As requested, here's the controller test app. Unfortunately I don't have my stuff in a state that I can test on hardware - I spent most of the afternoon just getting my C compiler working again.
+20210509
 
-However, it appears to work. Hold the fire button for three seconds (which one varies for joystick or keyboard mode) to switch modes. Otherwise, it counts interrupts and displays the bits, as requested. So that I could learn something from it, I also move a sprite left or right. Under emulation I think it's doing the right thing, at least.
+Various hardware tests for identifying ColecoVision behaviour (not necessarily for verifying hardware is working correctly!)
 
-rollerTest.rom is the code to run. 
+BIOSMEM: 
+- Phoenix boot mode test. First checks for 24k of ROM at >0000, then 8k of RAM at >6000. Then it verifies the 512k RAM exists (partial test), and checks that the memory correctly handles Megacart style banking. It follows up by verifying that the mask register works to limit 256k, 128k and 64k. No interactivity.
+
+BLANKTEST:
+- Dumps information about the NMI and VDP status register. Press fire button on controller 1 to toggle between NMI counting and VDP status register polling.
+
+DUMPRAM:
+- Displays the contents of startup RAM on the screen, and can be scrolled up and down. Meant to view power up RAM patterns.
+
+MEGATEST:
+- emits a byte from 0xC003 of every megacart page, for testing Phoenix Megacart simulation. Builds to differently sized ROMs.
+
+MEMTEST:
+- tests the RAM mapping registers for Phoenix SGM simulation. This RAM test is a little more comprehensive.
+
+PORTTEST:
+- reads the state of all ports and emits to the screen. Some intelligence is added for the VDP ports.
+
+ROLLERTEST:
+- tests the joysticks and roller controller. Holding fire for 3 seconds toggles between joystick and keypad mode. You can also press up or down for some audio tests.
+
+BUILDING:
 
 If you want to rebuild it:
 
@@ -17,8 +38,6 @@ If you want to rebuild it:
 That should be all you need to make changes. Just type make.
 
 Since it's not a bank-switched cartridge, you can probably build without my hacked linker or "makemegacart.exe", but you'll have to change the makefile's link step.
-
-- All the code is in rollerTest.c. 
 
 - crt0.s has the startup code, the vectors, and the raw interrupt handlers. There's some complexity in the spinner handler around my nmi masking code for libti99coleco - mostly wanted to see if it worked. It shouldn't interfere with your testing since the spinner gets priority.
 
